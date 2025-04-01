@@ -1,0 +1,20 @@
+{
+    "window": {
+        "width": 800,
+        "height": 600
+    },
+    "box": {
+        "padding": 5,
+        "margin": 5
+    },
+    "tiling" : {
+        "left": 0.60
+    },
+    "color": {
+        "bkg-color": [12,12,13],
+        "fore-color": [63,61,71],
+        "text-color": [205,178,123],
+        "other-color": [139,125,115]
+    }
+}
+
