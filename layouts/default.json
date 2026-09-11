@@ -1,0 +1,9 @@
+{
+  "grid": [1000, 1000],
+  "slots": [
+    { "module": "main",     "rect": [0,   0,   600, 1000] },
+    { "module": "notes",    "rect": [600, 0,   400, 333]  },
+    { "module": "comments", "rect": [600, 333, 400, 333]  },
+    { "module": "outline",  "rect": [600, 666, 400, 334]  }
+  ]
+}

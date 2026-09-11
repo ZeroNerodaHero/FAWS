@@ -1,0 +1,21 @@
+{
+  "faws": 1,
+  "title": "Pinwheel (not expressible as a split tree)",
+  "layout": {
+    "grid": [1000, 1000],
+    "slots": [
+      { "module": "main",     "rect": [0,   0,   700, 300] },
+      { "module": "notes",    "rect": [700, 0,   300, 700] },
+      { "module": "comments", "rect": [300, 700, 700, 300] },
+      { "module": "outline",  "rect": [0,   300, 300, 700] },
+      { "module": "ai",       "rect": [300, 300, 400, 400] }
+    ]
+  },
+  "modules": {
+    "main":     { "kind": "corpus",   "data": {} },
+    "notes":    { "kind": "notes",    "data": {} },
+    "outline":  { "kind": "outline",  "wire": { "source": "main" }, "data": {} },
+    "comments": { "kind": "comments", "wire": { "target": "main" }, "data": {} },
+    "ai":       { "kind": "ai",       "data": { "kept": "this data survives a round trip" } }
+  }
+}

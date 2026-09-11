@@ -1,0 +1,84 @@
+{
+  "faws": 1,
+  "title": "Example project",
+  "layout": {
+    "grid": [
+      1000,
+      1000
+    ],
+    "slots": [
+      {
+        "module": "main",
+        "rect": [
+          0,
+          0,
+          712,
+          500
+        ]
+      },
+      {
+        "module": "comments",
+        "rect": [
+          712,
+          0,
+          288,
+          666
+        ]
+      },
+      {
+        "module": "outline",
+        "rect": [
+          712,
+          666,
+          288,
+          334
+        ]
+      },
+      {
+        "module": "notes",
+        "rect": [
+          0,
+          500,
+          712,
+          500
+        ]
+      }
+    ]
+  },
+  "modules": {
+    "main": {
+      "kind": "corpus",
+      "data": {}
+    },
+    "notes": {
+      "kind": "notes",
+      "data": {}
+    },
+    "outline": {
+      "kind": "outline",
+      "wire": {
+        "source": "main"
+      },
+      "data": {}
+    },
+    "comments": {
+      "kind": "comments",
+      "wire": {
+        "target": "main"
+      },
+      "data": {}
+    },
+    "corpus": {
+      "kind": "corpus",
+      "data": {}
+    },
+    "corpus2": {
+      "kind": "corpus",
+      "data": {}
+    },
+    "corpus3": {
+      "kind": "corpus",
+      "data": {}
+    }
+  }
+}
