@@ -52,7 +52,7 @@ class WireDialog(QDialog):
         return {role: box.currentText() for role, box in self._boxes.items()}
 
 
-AUTOSAVE_DELAY_MS = 1500
+AUTOSAVE_DELAY_MS = 1000    # written this long after the last change (any module, any layout edit)
 
 
 class Workspace(QWidget):
@@ -79,6 +79,7 @@ class Workspace(QWidget):
         self._autosave.setInterval(AUTOSAVE_DELAY_MS)
         self._autosave.timeout.connect(self.autosave)
         self.changed.connect(self._schedule_autosave)
+        project.hub.on_dirty(lambda _module_id: self._schedule_autosave())
 
     # --- autosave -----------------------------------------------------------------
 

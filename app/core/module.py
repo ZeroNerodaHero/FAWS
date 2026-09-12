@@ -33,6 +33,15 @@ class Module:
     def build_widget(self) -> QWidget:
         raise NotImplementedError
 
+    def header_widget(self) -> QWidget | None:
+        """Optional controls the slot's title bar hosts between the title and the ▾/× buttons.
+        Return the same widget every time; it outlives any one frame, like widget()."""
+        return None
+
+    def mark_dirty(self) -> None:
+        """Tell the workspace the project needs saving (text edited, config changed)."""
+        self.hub.mark_dirty(self.id)
+
     def wire(self, role: str, other) -> None:
         self.wired[role] = other
 

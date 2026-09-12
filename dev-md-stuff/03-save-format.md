@@ -72,9 +72,21 @@ the layout, the module list, the wiring, and each module's data.
   versions are the module's own problem (put a `"v": 1` inside `data` if you
   need it).
 - **Text is stored as paragraphs, not HTML.** Diffable, greppable, editable by
-  hand, git-friendly. Paragraph `style` is one of `p h1 h2 h3 quote code`
-  for now. Inline bold/italic is a later phase (see roadmap); when it comes
-  it'll be markdown-style markers inside `text` so the file stays readable.
+  hand, git-friendly. Paragraph `style` is one of `p h1 h2 h3 quote code`.
+- **Inline formatting is a list of `runs`**, only written when a paragraph has
+  any. `text` is always there too, so grep still works:
+
+```json
+{ "id": "p_91c0", "style": "p", "align": "center", "list": "bullet",
+  "text": "It was dark.",
+  "runs": [ { "t": "It was " }, { "t": "dark", "b": true }, { "t": "." } ] }
+```
+
+  Run keys: `t` text · `b` bold · `i` italic · `u` underline · `s` strike ·
+  `font` · `size` · `color`. Only deviations from the paragraph style are
+  written (a heading is bold by its style, so its runs don't say `b`).
+  `align` is `center | right | justify` (left is the default and omitted).
+  `list` is `bullet | number`; consecutive list paragraphs form one list.
 
 ## Multiple works in one project
 
@@ -108,12 +120,14 @@ The in-memory model is identical, so this is a loader change, not a redesign.
 
 ## Saving behaviour
 
-- **Autosave**: any change to the layout or module set (resize a slot, split,
-  close, drop, swap, preset, add/remove a module) starts a 1.5 s timer. When
-  it fires, the whole project is written to its own path. Window resizes
-  don't count; only the data changing does. Quitting or opening another
-  project flushes a pending autosave first.
+- **Autosave**: every change restarts a 1 s timer; when it fires, the whole
+  project is written to its own path. "Every change" means layout (resize a
+  slot, split, close, drop, swap, preset, add/remove a module) *and* module
+  content — a module calls `mark_dirty()` when its text or config changes, so
+  typing in the corpus or a note saves 1 s after the last keystroke. Window
+  resizes don't count. Quitting or opening another project flushes a pending
+  autosave first. The status bar shows `autosaved HH:MM:SS`.
 - Save writes to a temp file then renames. Never half-written projects.
 - Ctrl+S still exists for people who like pressing it; it just saves now.
-- Later, once the corpus holds real text: an "autosave on/off" toggle and a
-  snapshot history, so a bad edit can be walked back. Not needed for layout.
+- Autosave can be turned off in settings → Preferences. Snapshot history (walk
+  a bad edit back) is still to do.

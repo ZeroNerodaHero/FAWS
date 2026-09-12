@@ -38,18 +38,33 @@ bold/italic). Word-processor feel: page-ish margins, decent font, no chrome.
 | Headings | `get_headings()` | `[{id, level, text}, ...]` in document order |
 | | `scroll_to(para_id)` | scroll + put the cursor there |
 | | `set_style(para_id, style)` | make a paragraph `h1`, `p`, etc. |
-| Selection | `get_selection()` | anchor of the current selection, or `None` |
+| Selection | `get_selection()` | anchor of the selection; collapsed (`start == end`) when nothing is selected, so listeners always know the current paragraph. `None` only if the selection spans paragraphs |
 | Highlights | `highlight(anchor, color, tag)` | colored underline/background |
 | | `clear_highlights(tag)` | remove all with that tag |
 
 **Events**: `changed {paras: [ids]}`, `headings_changed`, `selection_changed`.
 
-**Data**: `paras: [{id, style, text}]`.
+**Data**: `paras: [{id, style, text, runs?, align?, list?}]` (see `03-save-format.md`).
+
+**Status: built.** `app/modules/corpus/`: `editor.py` (page, ids, styles,
+anchors, highlights, lists), `formatbar.py` (the writing bar that lives in the
+slot's title bar, synced to the cursor), `serialize.py`, `module.py` (the four
+shapes + events).
+
+**Config**: `fit_width: bool` — page stretches to the slot (on) or is a fixed,
+centred 8.5in page (off, default). Toggle with `⇔` in the title bar or the `▾`
+menu; saved per corpus instance in the project file.
 
 **Notes for the build**
 
 - Paragraph ids live in `QTextBlockUserData`. New paragraph (Enter) → new id.
   Split a paragraph → the second half gets a new id. Merge → keep the first.
+  Undo can recreate a block without its id; `resolve_anchor` falls back to
+  searching for the anchor's `quote`, so comments survive that too.
+- Enter at the end of a heading gives a Normal paragraph (Word behaviour).
+  Bold/italic with no selection applies to the word under the cursor.
+- The paragraph style lives on the block format (undo-safe); the id does not
+  (would be duplicated on Enter). That split is deliberate.
 - `headings_changed` fires only when a heading's text/level/order actually
   changed, not on every keystroke. Debounce ~150 ms.
 - Highlights are `QTextEdit.ExtraSelection`s, not real formatting, so they
@@ -82,7 +97,12 @@ the AI module can read notes without a special case.
 
 **Needs**: nothing.
 
-**Data**: `notes: [{id, title, body}]`.
+**Data**: `notes: [{id, title, body}]`, plus `selected` (id of the open note).
+
+**Status: built** (`app/modules/notes.py`). Title bar holds a filter box, `+`
+and `−`. Notes are plain text; a paragraph is a line, with ids like
+`n_1a2b3c:2` (note id : line index). Reorder by dragging in the list. Delete
+asks first — there is no undo for it.
 
 ---
 

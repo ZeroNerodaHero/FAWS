@@ -9,7 +9,13 @@ Each phase ends with something you can run. No phase depends on a later one.
 ```
 
 Status: phase 0 done, phase 4 done (except hover preview on close), phase 2's
-save/open done. Phases 1, 3, 5 (the actual modules) are next.
+save/open/autosave done, phase 1's corpus done, phase 2's notes done. Next:
+outline and comments (phases 1b, 3), then the AI module.
+
+Adding modules and everything else that isn't writing lives in the **settings
+window** (top bar → ⚙, or Cmd+,): Modules · Layout · Project · Preferences.
+It's core, not a module. It's non-modal so you can drag a module button from
+it straight onto the grid.
 
 ## Phase 0: skeleton — done
 
@@ -25,18 +31,19 @@ save/open done. Phases 1, 3, 5 (the actual modules) are next.
 
 ## Phase 1: corpus + outline
 
-- Corpus module on `QTextEdit`: paragraph ids, styles, all four shapes.
+- Corpus module on `QTextEdit`: paragraph ids, styles, all four shapes. **done**,
+  plus inline bold/italic/underline/strike, font, size, alignment, lists.
 - Outline module wired to it.
 - Done when: type headings on the left, they appear on the right, click one
   to jump.
 
 ## Phase 2: notes + save/load
 
-- Notes module.
+- Notes module. **done** (list + editor, filter, reorder, TextSource per line).
 - `core/project.py`: save/load the envelope, call each module's
   `save()`/`load()`, preserve unknown kinds, atomic write. **done**
-- File menu: Open / Save / Save As. **done** (top bar → file).
-- Autosave: debounced 1.5 s after any layout/module change, flush on quit.
+- Open / Save / Save As. **done** (settings → Project, or Cmd+O / Cmd+S).
+- Autosave: debounced 1 s after any change (layout or module content), flush on quit.
   **done**. Still to do: New project.
 - Done when: quit, reopen, everything is where you left it.
 
@@ -56,11 +63,16 @@ save/open done. Phases 1, 3, 5 (the actual modules) are next.
   not done yet.
 - Every slot has a title bar with `▾` (module items + split / wiring /
   remove / close) and `×`. Modules add their own items via
-  `Module.menu_items()`.
-- Drag a title bar or a top-bar `+ kind` button onto a slot: edge → split,
+  `Module.menu_items()`, and can put controls right in the title bar via
+  `Module.header_widget()` — the corpus puts its writing bar there (style,
+  font, size, B/I/U/S, align, lists, clear, fit-width). Groups hide by
+  priority when the slot is narrow, so the bar never clips.
+- Modules call `mark_dirty()` when their content or config changes; that is
+  what schedules the autosave (typing in the corpus autosaves).
+- Drag a title bar or a settings `+ kind` button onto a slot: edge → split,
   centre → swap (or fill, if empty). New modules with `needs` get a wiring
   dialog listing only compatible targets.
-- Closing hides a module; it stays in the project under top bar → existing.
+- Closing hides a module; it stays in the project under settings → Modules → hidden.
   "remove from project" is refused while anything is wired to it.
 - Layout presets menu (`layouts/*.json`) + save current as preset.
 - Done when: you can go from the default layout to "corpus only" and back
@@ -76,8 +88,9 @@ save/open done. Phases 1, 3, 5 (the actual modules) are next.
 
 ## Later / maybe
 
-- Inline bold/italic (markdown-ish markers in `text`).
 - Export: markdown, docx, pdf.
+- Corpus extras: find/replace, text colour picker, tables, images, page breaks,
+  zoom, paste with formatting.
 - Folder/zip project format when single-file gets heavy.
 - Word count / goals module (needs `TextSource`, provides nothing; a nice
   10-minute proof that modules are cheap).
@@ -98,11 +111,14 @@ FAWS/
       layout.py             # slots on the 1000x1000 grid, tiling check, sweep, split, fill
       grid.py               # Qt: SlotFrame, GridContainer, ghost drag, overlay
       workspace.py          # one project on one grid: close/split/drop/menus/autosave
-      toolbar.py            # top bar
+      toolbar.py            # slim top bar: brand, title, ⚙
+      settings.py           # settings window (Modules · Layout · Project · Preferences)
+      prefs.py              # user prefs via QSettings (snap, autosave, last project)
       project.py            # load/save, MissingModule
     modules/
-      placeholder.py        # base for the four stubs below
-      corpus.py  notes.py  outline.py  comments.py
+      placeholder.py        # base for the stubs below
+      corpus/               # the real one: editor, formatbar, serialize, styles, module
+      notes.py  outline.py  comments.py
   layouts/                  # presets: default, focus, review
   examples/                 # example projects (default one opens with ./run.sh)
   dev-md-stuff/             # these docs

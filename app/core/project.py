@@ -108,8 +108,8 @@ class Project:
             entry = {"kind": kind}
             if spec.get("wire"):
                 entry["wire"] = spec["wire"]
-            if spec.get("config"):
-                entry["config"] = spec["config"]
+            if module.config:
+                entry["config"] = module.config
             entry["data"] = module.save()
             modules[module_id] = entry
         return {

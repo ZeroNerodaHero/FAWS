@@ -80,16 +80,22 @@ class DragOverlay(QWidget):
         painter.end()
 
 
+TITLE_H = 24
+TITLE_H_WITH_HEADER = 30
+
+
 class SlotTitleBar(QWidget):
-    """Title on the left, dropdown and close on the right. Hold or drag it to move the slot."""
+    """Title on the left, dropdown and close on the right. Hold or drag it to move the slot.
+    A module may put its own controls (header widget) in the middle."""
 
     def __init__(self, frame: SlotFrame):
         super().__init__(frame)
         self.frame = frame
         self.setObjectName("slotTitleBar")
-        self.setFixedHeight(24)
+        self.setFixedHeight(TITLE_H)
         self.setCursor(Qt.CursorShape.OpenHandCursor)
         row = QHBoxLayout(self)
+        self._row = row
         row.setContentsMargins(8, 0, 4, 0)
         row.setSpacing(2)
         self.label = QLabel(self)
@@ -97,6 +103,7 @@ class SlotTitleBar(QWidget):
         # rich-text labels grab mouse presses for link handling; we want them
         self.label.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
         row.addWidget(self.label, 1)
+        self.header: QWidget | None = None
         self.menu_btn = QToolButton(self)
         self.menu_btn.setObjectName("slotBtn")
         self.menu_btn.setText("▾")
@@ -124,6 +131,21 @@ class SlotTitleBar(QWidget):
     def set_text(self, title: str, module_id: str | None) -> None:
         tag = module_id or "empty"
         self.label.setText(f"{title} <span style='color:#7d7469'>#{tag}</span>")
+
+    def set_header(self, widget: QWidget | None) -> None:
+        if self.header is not None:
+            self._row.removeWidget(self.header)
+            if self.header.parent() is self:
+                self.header.setParent(None)
+        self.header = widget
+        if widget is None:
+            self._row.setStretch(self._row.indexOf(self.label), 1)
+            self.setFixedHeight(TITLE_H)
+            return
+        self._row.setStretch(self._row.indexOf(self.label), 0)
+        self._row.insertWidget(1, widget, 1)
+        widget.show()
+        self.setFixedHeight(TITLE_H_WITH_HEADER)
 
     def _grid(self) -> GridContainer | None:
         parent = self.frame.parentWidget()
@@ -228,11 +250,13 @@ class ModuleSlotFrame(SlotFrame):
         self.module = module
         self.min_px = tuple(module.min_size)
         self.set_title(module.title)
+        self.title_bar.set_header(module.header_widget())
         self.set_content(module.widget())
 
     def dispose(self) -> None:
-        # the module's widget outlives this frame; it may be shown again later.
-        # During a swap the new frame may already have taken it, hence the parent check.
+        # the module's widgets outlive this frame; they may be shown again later.
+        # During a swap the new frame may already have taken them, hence the parent checks.
+        self.title_bar.set_header(None)
         if self._content is not None:
             self._layout.removeWidget(self._content)
             if self._content.parent() is self:
@@ -253,6 +277,7 @@ class GridContainer(QWidget):
         self.frames: list[SlotFrame] = []
         self._hover: Edge | None = None
         self._drag: Edge | None = None
+        self.snap_enabled = True
         self.overlay = DragOverlay(self)
         # Workspace installs this to say whether a drop makes sense
         self.drop_allowed = lambda payload, frame, zone: True
@@ -394,7 +419,7 @@ class GridContainer(QWidget):
         p = event.position().toPoint()
         if self._drag is not None:
             pos = self.units_x(p.x()) if self._drag.axis == "v" else self.units_y(p.y())
-            if not (event.modifiers() & Qt.KeyboardModifier.AltModifier):
+            if self.snap_enabled and not (event.modifiers() & Qt.KeyboardModifier.AltModifier):
                 pos = self._snap(self._drag, pos)
             changes = self.model.sweep(self._drag, pos, self.min_units_for)
             if changes is not None:

@@ -12,35 +12,35 @@
         "rect": [
           0,
           0,
-          712,
-          500
-        ]
-      },
-      {
-        "module": "comments",
-        "rect": [
-          712,
-          0,
-          288,
-          666
+          640,
+          1000
         ]
       },
       {
         "module": "outline",
         "rect": [
-          712,
-          666,
-          288,
-          334
+          640,
+          0,
+          360,
+          300
+        ]
+      },
+      {
+        "module": "comments",
+        "rect": [
+          640,
+          300,
+          360,
+          400
         ]
       },
       {
         "module": "notes",
         "rect": [
-          0,
-          500,
-          712,
-          500
+          640,
+          700,
+          360,
+          300
         ]
       }
     ]
@@ -48,11 +48,103 @@
   "modules": {
     "main": {
       "kind": "corpus",
-      "data": {}
+      "data": {
+        "paras": [
+          {
+            "id": "p_a1b2c3",
+            "style": "h1",
+            "text": "  the Chapter 1"
+          },
+          {
+            "id": "p_d4e5f6",
+            "style": "p",
+            "text": "The storm came in at dusk, and with it the first of the strangers.",
+            "runs": [
+              {
+                "t": "The storm came in at dusk, and with it the "
+              },
+              {
+                "t": "first",
+                "i": true
+              },
+              {
+                "t": " of the strangers."
+              }
+            ]
+          },
+          {
+            "id": "p_0718a9",
+            "style": "p",
+            "text": "Mara watched from the window of the inn. She had been told to expect three. She counted five."
+          },
+          {
+            "id": "p_b3c4d5",
+            "style": "h2",
+            "text": "The Inn"
+          },
+          {
+            "id": "p_e6f708",
+            "style": "quote",
+            "text": "Nobody comes to Holt on purpose."
+          },
+          {
+            "id": "p_19a2b3",
+            "style": "p",
+            "text": "Things to establish in this scene:"
+          },
+          {
+            "id": "p_c4d5e6",
+            "style": "p",
+            "text": "who sent the strangers",
+            "list": "bullet"
+          },
+          {
+            "id": "p_f70819",
+            "style": "p",
+            "text": "why Mara was warned",
+            "list": "bullet"
+          },
+          {
+            "id": "p_2a3b4c",
+            "style": "p",
+            "text": "the fifth stranger's name",
+            "list": "bullet"
+          },
+          {
+            "id": "p_5d6e7f",
+            "style": "h2",
+            "text": "The Morning After"
+          },
+          {
+            "id": "p_809a1b",
+            "style": "p",
+            "text": ""
+          }
+        ]
+      }
     },
     "notes": {
       "kind": "notes",
-      "data": {}
+      "data": {
+        "notes": [
+          {
+            "id": "n_1a2b3c",
+            "title": "Names",
+            "body": "Protagonist: Mara\nVillage: Holt\nThe fifth stranger: ?"
+          },
+          {
+            "id": "n_4d5e6f",
+            "title": "Timeline",
+            "body": "Day 1 \u2014 storm, strangers arrive\nDay 2 \u2014 the morning after"
+          },
+          {
+            "id": "n_708192",
+            "title": "Things to fix",
+            "body": "Why was Mara warned at all?"
+          }
+        ],
+        "selected": "n_1a2b3c"
+      }
     },
     "outline": {
       "kind": "outline",
@@ -66,18 +158,6 @@
       "wire": {
         "target": "main"
       },
-      "data": {}
-    },
-    "corpus": {
-      "kind": "corpus",
-      "data": {}
-    },
-    "corpus2": {
-      "kind": "corpus",
-      "data": {}
-    },
-    "corpus3": {
-      "kind": "corpus",
       "data": {}
     }
   }

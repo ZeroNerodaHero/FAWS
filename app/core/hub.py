@@ -16,6 +16,7 @@ class Hub:
     def __init__(self):
         self._modules: dict[str, object] = {}
         self._listeners: dict[tuple[str, str], list[Callable]] = defaultdict(list)
+        self._dirty_listeners: list[Callable[[str], None]] = []
 
     # --- registry ---------------------------------------------------------
 
@@ -57,6 +58,15 @@ class Hub:
     def emit(self, module_id: str, event: str, payload=None) -> None:
         for cb in list(self._listeners.get((module_id, event), ())):
             cb(payload)
+
+    # --- dirty tracking (any module -> whoever saves) ------------------------
+
+    def on_dirty(self, callback: Callable[[str], None]) -> None:
+        self._dirty_listeners.append(callback)
+
+    def mark_dirty(self, module_id: str) -> None:
+        for cb in list(self._dirty_listeners):
+            cb(module_id)
 
     # --- wiring -----------------------------------------------------------
 
